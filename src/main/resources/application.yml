@@ -1,0 +1,43 @@
+server:
+  port: 9200
+app:
+  gateway:
+    urls:
+      unsecured:
+        - /login
+
+# public Key
+  token:
+    jwt:
+      public-key:
+        -----BEGIN PUBLIC KEY-----
+  
+        -----END PUBLIC KEY-----
+
+#
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      default-filters:
+        - JwtTokenValidator
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      routes:
+        
+        - id: login
+          uri: localhost:9204/
+          predicates:
+            - Path=/app/security/**
+        - id: dataflow
+          uri: localhost:9201/
+          predicates:
+            - Path=/app/MoviesApp/**
+        
+
